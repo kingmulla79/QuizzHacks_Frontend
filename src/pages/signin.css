@@ -1,0 +1,23 @@
+.loginPage {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 120%;
+}
+
+/* .loginPage::before {
+  content: "";
+  background-image: url("../../public/images/The\ Onslow\ Blucher\ in\ White\ Buck.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  opacity: 0.55;
+} */
+
+.loginForm {
+  position: relative;
+}
