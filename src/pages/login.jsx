@@ -3,41 +3,51 @@ import "./login.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { server } from "../server";
-import Validation from "../Validation";
 
 function Signin() {
   const [values, setValues] = useState({
-    username: "",
     email: "",
-    phone: "",
-    confirmpassword: "",
     password: "",
   });
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
-  const [errors, setErrors] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setErrors(Validation(values));
-    axios
-      .post(`${server}/auth/login`, values)
-      .then((res) => {
-        if (res.data.success === true) {
-          navigate("/");
-        } else {
-          setErrors(res.data.error);
-        }
-      })
-      .catch((err) => console.log(err));
+    const validationError = {};
+    const emailpattern = /\S+@\S+\.\S+/;
+    if (!values.email.trim()) {
+      validationError.email = "A valid email must be provided!";
+    } else if (!emailpattern.test(values.email)) {
+      validationError.email = "The email pattern is invalid";
+    }
+    if (!values.password.trim()) {
+      validationError.password = "A password must be provided!";
+    }
+    setErrors(validationError);
+    if (Object.keys(validationError).length === 0) {
+      axios
+        .post(`${server}/auth/login`, values)
+        .then((res) => {
+          if (res.data.success === true) {
+            navigate("/homepage");
+          }
+        })
+        .catch((err) => {
+          setLoginError(err.response.data.message);
+          console.log(err.response.data.message);
+        });
+    }
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 loginPage">
       <div className="p-3 rounded w-25 border loginForm">
-        <div className="text-danger">{errors && errors}</div>
         <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
+        <div className="error-text">{loginError && loginError}</div>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="mb-3">
             <label htmlFor="email">
               <strong>Email</strong>
@@ -50,6 +60,7 @@ function Signin() {
               className="form-control rounded-0"
               autoComplete="off"
             />
+            {errors.email && <span>{errors.email}</span>}
           </div>
           <div className="mb-3">
             <label htmlFor="password">
@@ -64,6 +75,7 @@ function Signin() {
               }
               className="form-control rounded-0"
             />
+            {errors.password && <span>{errors.password}</span>}
           </div>
           <button type="submit" className="btn btn-success w-100 rounded-0">
             {" "}
