@@ -10,10 +10,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Homepage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
-        <Route path="login" element={<LoginPage />} />
+        <Route path="homepage" element={<Homepage />} />
         <Route path="verify" element={<VerifyOTPPage />} />
+        <Route
+          path="*"
+          element={
+            <div>
+              <h2>404 Page not found</h2>
+            </div>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

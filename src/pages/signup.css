@@ -1,7 +1,12 @@
 .loginPage {
-  background-position: center;
+  overflow-y: scroll;
+  /* background-position: center;
   background-repeat: no-repeat;
-  background-size: 100% 120%;
+  background-size: 100% 120%; */
+}
+.signupForm {
+  overflow-y: auto;
+  height: 600px;
 }
 
 /* .loginPage::before {
@@ -20,4 +25,19 @@
 
 .loginForm {
   position: relative;
+}
+span {
+  color: red;
+  font-size: 12px;
+  padding: 0 0;
+}
+.input {
+  padding-bottom: 0px;
+  padding-top: 0;
+}
+#input {
+  margin-bottom: 5px;
+}
+.error-text {
+  color: red;
 }
