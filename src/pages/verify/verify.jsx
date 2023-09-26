@@ -1,29 +1,42 @@
-import React, { useState } from "react";
-import "./login.css";
+import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { server } from "../server";
+import { server } from "../../server";
 
 function VerifyOTP() {
-  const [values, setValues] = useState({
-    otp: "",
-  });
+  const [OTP, setOTP] = useState("");
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
   const [error, setError] = useState("");
 
+  const OTPRef = useRef();
+  useEffect(() => {
+    OTPRef.current.focus();
+  }, []);
+
+  const OTP_REGEX = /^\d{4}$/;
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .post(`${server}/auth/login`, values)
+      .post(
+        `${server}/auth/verifyOTP`,
+        { otp: OTP },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         if (res.data.success === true) {
           navigate("/");
         } else {
-          setError(res.data.Error);
+          setError(res.data.message);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setError(err.response.data.message);
+        console.log(err);
+      });
   };
 
   return (
@@ -35,13 +48,22 @@ function VerifyOTP() {
           <div className="mb-3">
             <h4>Enter the OTP code sent to your email for verification</h4>
             <input
-              type="number"
+              type="text"
               placeholder="Enter OTP code"
-              name="phone"
-              onChange={(e) => setValues({ ...values, phone: e.target.value })}
+              name="OTP"
+              ref={OTPRef}
+              onChange={(e) => setOTP(e.target.value)}
               className="form-control rounded-0"
               autoComplete="off"
             />
+            <br />
+            <button
+              type="submit"
+              className="btn btn-success w-100 rounded-0"
+              disabled={OTP_REGEX.test(OTP) ? false : true}
+            >
+              Sign Up
+            </button>
           </div>
         </form>
       </div>
