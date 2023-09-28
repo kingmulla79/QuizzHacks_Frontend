@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthProvider";
 import { server } from "../../server";
 // import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -15,6 +16,8 @@ import Footer from "../../components/footer/footer";
 import "./signup.css";
 
 function Signin() {
+  const { setUserRegID, setLoading } = useAuthContext();
+
   const USER_REGEX = /^[A-z][A-z0-9-_]{4,23}$/;
   const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
   const EMAIL_REGEX = /\S+@\S+\.\S+/;
@@ -82,6 +85,7 @@ function Signin() {
   }, [user, pwd, email, phone, confirmPwd]);
 
   const handleSubmit = async (event) => {
+    event.preventDefault();
     const userNameValidation = USER_REGEX.test(user);
     const emailValidation = EMAIL_REGEX.test(email);
     const phoneValidation = PHONE_REGEX.test(phone);
@@ -103,7 +107,7 @@ function Signin() {
       password: pwd,
       confirmpassword: confirmPwd,
     };
-    event.preventDefault();
+    setLoading(true);
     await axios
       .post(`${server}/auth/register`, values, {
         headers: { "Content-Type": "application/json" },
@@ -111,6 +115,7 @@ function Signin() {
       })
       .then((res) => {
         if (res.data.success === true) {
+          setUserRegID(res?.data?.data?.userId);
           navigate("/verify");
         }
         setUser("");
