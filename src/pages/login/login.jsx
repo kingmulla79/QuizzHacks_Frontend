@@ -7,7 +7,7 @@ import { server } from "../../server";
 import Footer from "../../components/footer/footer";
 
 function Login() {
-  const { setToken, setLoading } = useAuthContext();
+  const { setUserRole, setToken, setLoading } = useAuthContext();
 
   const emailRef = useRef();
   const errRef = useRef();
@@ -46,6 +46,7 @@ function Login() {
         .then((res) => {
           if (res.data.success === true) {
             setToken(res.data.authorization);
+            setUserRole(res?.data?.user?.role);
             navigate("/");
             setEmail("");
             setPwd("");

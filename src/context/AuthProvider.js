@@ -8,6 +8,8 @@ export const AuthContext = React.createContext({
   setUserRegID: () => {},
   removeUserRegID: () => {},
   isAuthenticated: () => false,
+  role: null,
+  setUserRole: () => {},
   loading: true,
 });
 
@@ -15,11 +17,19 @@ export default function AuthProvider({ children }) {
   const [userID, setUserID] = useState(null);
   const [authToken, setAuthToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     const storedAuthToken = sessionStorage.getItem("token");
     if (storedAuthToken) {
       setAuthToken(storedAuthToken);
+    }
+    setLoading(false);
+  }, []);
+  useEffect(() => {
+    const storedUserRole = sessionStorage.getItem("role");
+    if (storedUserRole) {
+      setUserRole(storedUserRole);
     }
     setLoading(false);
   }, []);
@@ -47,6 +57,10 @@ export default function AuthProvider({ children }) {
   const isAuthenticated = () => {
     return authToken !== null;
   };
+  const setUserRole = (role) => {
+    setRole(role);
+    sessionStorage.setItem("role", role);
+  };
 
   return (
     <AuthContext.Provider
@@ -59,6 +73,8 @@ export default function AuthProvider({ children }) {
         removeUserRegID,
         isAuthenticated,
         loading,
+        role,
+        setUserRole,
         setLoading,
       }}
     >
