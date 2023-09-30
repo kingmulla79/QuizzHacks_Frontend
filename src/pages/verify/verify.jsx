@@ -2,8 +2,10 @@ import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { server } from "../../server";
+import { useAuthContext } from "../../context/AuthProvider";
 
 function VerifyOTP() {
+  const { setToken, removeUserRegID } = useAuthContext();
   const [OTP, setOTP] = useState("");
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
@@ -20,7 +22,10 @@ function VerifyOTP() {
     axios
       .post(
         `${server}/auth/verifyOTP`,
-        { otp: OTP },
+        {
+          userId: sessionStorage.getItem("userId"),
+          otp: OTP,
+        },
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -28,6 +33,8 @@ function VerifyOTP() {
       )
       .then((res) => {
         if (res.data.success === true) {
+          removeUserRegID(res?.data?.user?.userId);
+          setToken(res?.data?.authorization);
           navigate("/");
         } else {
           setError(res.data.message);

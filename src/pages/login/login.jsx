@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
-import AuthContext from "../../context/AuthProvider";
+import React, { useState, useRef, useEffect } from "react";
+import { useAuthContext } from "../../context/AuthProvider";
 import "./login.css";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
@@ -7,7 +7,7 @@ import { server } from "../../server";
 import Footer from "../../components/footer/footer";
 
 function Login() {
-  const { setAuth } = useContext(AuthContext);
+  const { setUserRole, setToken, setLoading } = useAuthContext();
 
   const emailRef = useRef();
   const errRef = useRef();
@@ -30,6 +30,7 @@ function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     if (!email || !pwd) {
       setErrMsg("Please fill out all details");
       return;
@@ -44,12 +45,11 @@ function Login() {
         })
         .then((res) => {
           if (res.data.success === true) {
-            navigate("/homepage");
+            setToken(res.data.authorization);
+            setUserRole(res?.data?.user?.role);
+            navigate("/");
             setEmail("");
             setPwd("");
-            const token = res?.data?.authorization;
-            const role = res?.data?.role;
-            setAuth({ email, pwd, role, token });
           }
         })
         .catch((err) => {
